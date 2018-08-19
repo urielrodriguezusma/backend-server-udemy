@@ -4,12 +4,15 @@
   "description": "Servido Backend Curso angular avanzado",
   "main": "index.js",
   "scripts": {
-    "start":"nodemon app.js",
+    "start": "nodemon app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Uriel Rodriguez Usma",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.16.3"
+    "bcryptjs": "^2.4.3",
+    "express": "^4.16.3",
+    "jsonwebtoken": "^8.3.0",
+    "mongoose-unique-validator": "^2.0.1"
   }
 }
