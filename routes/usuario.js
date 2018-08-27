@@ -14,32 +14,49 @@ var mdAutenticacion = require("../middlewares/autenticacion");
 // Obtener Todos los Usuarios
 //==============================================
 app.get("/", (request, response, next) => {
-  Usuario.find({}, "nombre email img role").exec((err, usuarios) => {
-    if (err) {
-      return response.status(500).json({
-        ok: false,
-        mensaje: "Error cargando usuarios",
-        errors: err
+  var desde = request.query.desde || 0;
+  desde = Number(desde);
+
+  Usuario.find({}, "nombre email img role")
+    .skip(desde)
+    .limit(5)
+    .exec((err, usuarios) => {
+      if (err) {
+        return response.status(500).json({
+          ok: false,
+          mensaje: "Error cargando usuarios",
+          errors: err
+        });
+      }
+
+      Usuario.count({}, (err, conteo) => {
+        if (err) {
+          return response.status(500).json({
+            ok: false,
+            mensaje: "Error calculando el número de usuarios",
+            errors: err
+          });
+        }
+        response.status(200).json({
+          ok: true,
+          usuarios: usuarios,
+          total: conteo
+        });
       });
-    }
-    response.status(200).json({
-      ok: true,
-      usuarios: usuarios
     });
-  });
 });
 
 //==============================================
 // Actualizar un usuario
 //==============================================
-app.put("/:id",mdAutenticacion.VerificarToken, (req, res) => {
+app.put("/:id", mdAutenticacion.VerificarToken, (req, res) => {
   var id = req.params.id;
 
   Usuario.findById(id, (err, usuario) => {
     if (err) {
       return res.status(500).json({
         ok: false,
-        mensaje: "El usuario al buscar usuario.",
+        mensaje: "Error al buscar usuario.",
         errors: err
       });
     }
@@ -111,7 +128,7 @@ app.post("/", mdAutenticacion.VerificarToken, (req, res) => {
 // Eliminar un usuario
 //==============================================
 
-app.delete("/:id",mdAutenticacion.VerificarToken ,(req, res) => {
+app.delete("/:id", mdAutenticacion.VerificarToken, (req, res) => {
   var id = req.params.id;
   Usuario.findByIdAndRemove(id, (err, usuarioBorrado) => {
     if (err) {
