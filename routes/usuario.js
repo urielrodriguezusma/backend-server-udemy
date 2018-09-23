@@ -17,9 +17,9 @@ app.get("/", (request, response, next) => {
   var desde = request.query.desde || 0;
   desde = Number(desde);
 
-  Usuario.find({}, "nombre email img role")
+  Usuario.find({}, "nombre email img role google")
     .skip(desde)
-    .limit(5)
+    .limit(5) 
     .exec((err, usuarios) => {
       if (err) {
         return response.status(500).json({
@@ -49,7 +49,7 @@ app.get("/", (request, response, next) => {
 //==============================================
 // Actualizar un usuario
 //==============================================
-app.put("/:id", mdAutenticacion.VerificarToken, (req, res) => {
+app.put("/:id", [mdAutenticacion.VerificarToken, mdAutenticacion.VerificarADMIN_O_MismoUsuario], (req, res) => {
   var id = req.params.id;
 
   Usuario.findById(id, (err, usuario) => {
@@ -59,7 +59,7 @@ app.put("/:id", mdAutenticacion.VerificarToken, (req, res) => {
         mensaje: "Error al buscar usuario.",
         errors: err
       });
-    }
+    } 
 
     if (!usuario) {
       return res.status(400).json({
@@ -71,7 +71,7 @@ app.put("/:id", mdAutenticacion.VerificarToken, (req, res) => {
 
     var body = req.body;
     usuario.nombre = body.nombre;
-    usuario.email = body.email;
+    // usuario.email = body.email;
     usuario.role = body.role;
 
     usuario.save((err, usuarioGuardado) => {
@@ -96,16 +96,19 @@ app.put("/:id", mdAutenticacion.VerificarToken, (req, res) => {
 // Crear un nuevo registro de usuario
 //==============================================
 
-app.post("/", mdAutenticacion.VerificarToken, (req, res) => {
+// app.post("/", mdAutenticacion.VerificarToken, (req, res) => {
+app.post("/",(req, res) => {
   var body = req.body;
 
-  var usuario = new Usuario({
+  var usuario = new Usuario({ 
     nombre: body.nombre,
     email: body.email,
     password: bcrypt.hashSync(body.password, 10),
     img: body.img,
-    role: body.role
+    role: body.role 
   });
+ 
+  console.log("Imagen",usuario.img);
 
   usuario.save((err, usuarioGuardado) => {
     if (err) {
@@ -128,7 +131,7 @@ app.post("/", mdAutenticacion.VerificarToken, (req, res) => {
 // Eliminar un usuario
 //==============================================
 
-app.delete("/:id", mdAutenticacion.VerificarToken, (req, res) => {
+app.delete("/:id", [mdAutenticacion.VerificarToken,mdAutenticacion.VerificarADMIN_ROLE], (req, res) => {
   var id = req.params.id;
   Usuario.findByIdAndRemove(id, (err, usuarioBorrado) => {
     if (err) {

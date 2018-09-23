@@ -11,7 +11,7 @@ var mdAutenticacion = require("../middlewares/autenticacion");
 //==============================================
 app.get("/", (req, res) => {
   var desde = req.query.desde || 0;
-  desde= Number(desde);
+  desde = Number(desde);
   Medico.find({})
     .skip(desde)
     .limit(5)
@@ -39,6 +39,39 @@ app.get("/", (req, res) => {
           medicos: medicos,
           total: conteo
         });
+      });
+    });
+});
+
+//==============================================
+// obtener un Médico por id
+//==============================================
+app.get("/:id", (req, resp) => {
+  var id = req.params.id;
+  Medico.findById(id)
+    .populate("usuario", "nombre email img")
+    .populate("hospital")
+    .exec((err, medico) => {
+      if (err) {
+        return resp.status(400).json({
+          ok: false,
+          mensaje: "Error al buscar el registro del médico",
+          errors: err
+        });
+      }
+      if (!medico) {
+        return resp.status(400).json({
+          ok: false,
+          mensaje: "el médico con el id " + id + " no existe.",
+          errors: {
+            mensaje: "Error al actualizar el registro del médico " + id
+          }
+        });
+      }
+
+      return resp.status(200).json({
+        ok: true,
+        medico: medico
       });
     });
 });

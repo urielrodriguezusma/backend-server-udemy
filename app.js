@@ -5,6 +5,19 @@ var bodyParser = require("body-parser");
 
 //Inicializar variables
 var app = express();
+ 
+
+//CORS
+app.use(function(req, res, next) {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header("Access-Control-Allow-Credentials", "true");
+  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,PATCH,OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Access-Control-Allow-Headers,Content-Type,'
+        + 'Authorization,Content-Length, X-Requested-With,Access-Control-Request-Headers,token');
+
+  next();
+});
+
 
 //Body Parser
 
@@ -20,7 +33,7 @@ mongoose.connection.openUri(
     if (err) throw err;
     console.log("Base de datos \x1b[32m%s\x1b[0m", "online");
   }
-);
+); 
 
 //Importar Rutas
 var appRoutes = require("./routes/app");

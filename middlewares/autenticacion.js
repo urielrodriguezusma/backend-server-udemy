@@ -17,12 +17,43 @@ exports.VerificarToken = function(req, res, next) {
         errors: err
       });
     }
-    
-    req.usuario=decoded.usuario;
+
+    req.usuario = decoded.usuario;
     next();
     // res.status(200).json({
     //     ok: true,
     //     decoded,decoded
     // });
   });
+};
+
+//==============================================
+// Verificar ADMIN
+//==============================================
+exports.VerificarADMIN_ROLE = function(req, res, next) {
+  var usuario = req.usuario;
+  if (usuario.role === "ADMIN_ROLE") {
+    next();
+  } else {
+    return res.status(401).json({
+      ok: false,
+      mensaje: "Token incorrecto - No es administrador"
+    });
+  }
+};
+
+//==============================================
+// Verificar ADMIN o mismo usuario
+//==============================================
+exports.VerificarADMIN_O_MismoUsuario = function(req, res, next) {
+  var usuario = req.usuario;
+  var id = req.params.id;
+  if (usuario.role === "ADMIN_ROLE" || usuario._id === id) {
+    next();
+  } else {
+    return res.status(401).json({
+      ok: false,
+      mensaje: "Token incorrecto - No es administrador ni el mismo usuario"
+    });
+  }
 };

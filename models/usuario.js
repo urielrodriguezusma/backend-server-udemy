@@ -6,20 +6,25 @@ var Schema = mongoose.Schema;
 var rolesValidos = {
   values: ["ADMIN_ROLE", "USER_ROLE"],
   message: "{VALUE} no es un rol permitido"
-};
+}; 
 
 var usuarioSchema = new Schema(
   {
-    nombre: { type: String, required: [true, "El nombre es requerido"] },
+    nombre: { type: String, required: [true, "El nombre es necesario"] },
     email: {
       type: String,
       unique: true,
-      required: [true, "El correo es requerido"]
+      required: [true, "El correo es necesario"]
     },
-    password: { type: String, required: [true, "El password es requerido"] },
-    img: { type: String, required: false },
-    role: {type: String,required: true,default: "USER_ROLE",enum: rolesValidos,uppercase:true},
-    google: { type: Boolean, default: false }
+    password: { type: String, required: [true, "La contraseña es necesaria"] },
+    img: { type: String, required: false,default:'' },
+    role: {
+      type: String,
+      required: true,
+      default: "USER_ROLE",
+      enum: rolesValidos
+    },
+    google: { type: Boolean, required: true, default: false }
   },
   {
     versionKey: false
